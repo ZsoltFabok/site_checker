@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'site_checker'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.date        = '2012-07-18'
   s.summary     = "site_checker-#{s.version}"
   s.description = "A simple tool for checking references on your website"
@@ -9,6 +9,6 @@ Gem::Specification.new do |s|
   s.files       = ["lib/site_checker.rb"]
   s.homepage    = 'https://github.com/ZsoltFabok/site_checker'
 
-  s.add_development_dependency 'rspec', '~> 2.11', '>= 2.11.0'
-  s.add_runtime_dependency 'nokogiri', '~> 1.5', '>= 1.5.5'
+  s.add_development_dependency('rspec', ['>= 2.11.0'])
+  s.add_runtime_dependency('nokogiri', ['>= 1.5.5'])
 end
