@@ -1,6 +1,5 @@
 require 'rake'
-require 'rspec/core/rake_task'
+require 'bundler'
 
-RSpec::Core::RakeTask.new(:spec) 
-
-task :default  => :spec
+Bundler::GemHelper.install_tasks
+Dir['gem_tasks/**/*.rake'].each { |rake| load rake }
