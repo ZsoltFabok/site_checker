@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.email       = 'me@zsoltfabok.com'
   s.files       = ["lib/site_checker.rb"]
   s.homepage    = 'https://github.com/ZsoltFabok/site_checker'
+  s.license     = 'BSD'
 
   s.add_development_dependency('rspec', ['>= 2.11.0'])
   s.add_runtime_dependency('nokogiri', ['>= 1.5.5'])

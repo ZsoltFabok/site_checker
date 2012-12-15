@@ -95,3 +95,7 @@ it "all the local pages have to be visited" do
   @site_checker.local_pages.size.should eq @number_of_local_pages
 end
 ```
+
+### Copyright
+
+Copyright (c) 2012 Zsolt Fabok and Contributors. See LICENSE for details.
