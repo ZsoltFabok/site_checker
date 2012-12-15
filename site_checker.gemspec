@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   s.name        = 'site_checker'
   s.version     = '0.1.1'
