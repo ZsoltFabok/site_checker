@@ -1,179 +1,164 @@
-require 'nokogiri'
 require 'open-uri'
+require 'page'
+require 'fetch_content'
+require 'link'
 
 class SiteChecker
-  attr_accessor :problems
   attr_accessor :ignore_list, :visit_references, :max_recursion_depth
 
   def initialize()
-    yield self if block_given?  
+    yield self if block_given?
     @ignore_list ||= []
     @visit_references ||= false
     @max_recursion_depth ||= -1
   end
 
   def check(url, root)
-    @visits = {}
-    @problems = {}
+    @links = []
     @recursion_depth = 0
-    
     @root = root
-
-    register_visit(:local_page, url)
-    process_local_page(url, nil)
+    link = Link.create({:url => url, :kind => :page, :location => :local})
+    register_visit(link)
+    process_local_page(link)
   end
 
   def local_pages
-    @visits[:local_page]
+    get_urls(:local, :page)
   end
 
   def remote_pages
-    @visits[:remote_page]
+    get_urls(:remote, :page)
   end
 
   def local_images
-    @visits[:local_image]
+    get_urls(:local, :image)
   end
 
   def remote_images
-    @visits[:remote_image]
+    get_urls(:remote, :image)
+  end
+
+  def problems
+    problems = {}
+    @links.each do |link|
+      if link.has_problem?
+        problems[link.parent_url] ||= []
+        problems[link.parent_url] << "#{link.url} #{link.problem}"
+      end
+    end
+    problems
   end
 
   private
-  def process_local_page(url, parent_url)
-    links = collect_links(url, parent_url)
+  def get_urls(location, kind)
+    @links.find_all do |link|
+      if link.location == location && link.kind == kind
+        link
+      end
+    end.map do |link|
+      link.url
+    end
+  end
 
-    filter_out_working_anchors!(links)
-    report_and_remove_anchors!(links, parent_url)
+  def process_local_page(parent)
+    links = collect_links(parent)
 
-    links.each do |link, kind|
-      if kind != :anchor
-        visit(kind, url, link) unless visited?(kind, link)
+    links.each do |link|
+      link.parent_url = parent.url
+link.url = until_issue_7(link.url) # TODO
+      unless link.anchor?
+        visit(link) unless visited?(link)
       else
+        @links << link
       end
     end
   end
 
-  def register_visit(kind, link)
-    @visits[kind] = [] unless @visits.has_key?(kind)
-    @visits[kind] << link
+  def register_visit(link)
+    @links << link unless visited?(link)
   end
 
-  def visited?(kind, link)
-    @visits[kind] = [] unless @visits.has_key?(kind)
-    @visits[kind].include?(link)
+  def visited?(link)
+    @links.include?(link)
   end
 
-  def visit(kind, parent_url, link)
-      register_visit(kind, link)
-      if kind != :local_page
-        open_reference(kind, link, parent_url)
+  def visit(link)
+    register_visit(link)
+    unless link.has_problem?
+      unless link.local_page?
+        open_reference(link)
       else
         unless stop_recursion?
           @recursion_depth += 1
-          process_local_page(link, parent_url)
+          process_local_page(link)
           @recursion_depth -= 1
         end
       end
+    end
   end
 
-  def open_reference(kind, link, parent_url)
+  def open_reference(link)
     content = nil
     begin
-      if kind == :local_page
-        if URI(@root).absolute?
-          content = open(link)
-        else
-          link = add_index_html(link)
-          content = File.open(link).read
-        end
-      elsif kind == :local_image
-        if URI(@root).absolute?
-          open(link)
-        else
-          File.open(link)
-        end
-      elsif @visit_references
-        open(link)
+      if URI(@root).absolute?
+        content = fetch_from_the_web(link)
+      else
+        content = fetch_from_file_system(link)
       end
-    rescue OpenURI::HTTPError => e
-      new_problem(strip_root(parent_url), "#{strip_root(link)} (#{e.message.strip})")
-    rescue Errno::ENOENT => e
-      link = remove_index_html(link) if kind == :local_page
-      new_problem(strip_root(parent_url), "#{strip_root(link)} (404 Not Found)")
     rescue => e
-      new_problem(strip_root(parent_url), "#{strip_root(link)} (#{e.message.strip})")
+      link.problem = "#{e.message.strip}"
     end
     content
   end
 
-  def filter_out_working_anchors!(links)
-    links.delete_if{ |link, kind| (kind == :local_page && has_anchor?(links, link)) }
-  end
-
-  def report_and_remove_anchors!(links, parent_url)
-    anchors = links.select {|link, kind| link.match(/^.+#.+$/) && kind == :local_page}
-    anchors.each do |anchor, kind|
-      new_problem(strip_root(parent_url), "#{strip_root(anchor)} (404 Not Found)")
-      links.delete(anchor)
+  def fetch_from_file_system(link)
+    begin
+      location = create_absolute_reference(link.url)
+      if link.local_page?
+        content = File.open(add_index_html(location)).read
+      elsif link.local_image?
+        File.open(location)
+      elsif @visit_references
+        open(link.url)
+      end
+    rescue Errno::ENOENT => e
+      raise "(404 Not Found)"
+    rescue => e
+      raise "(#{e.message.strip})"
     end
+    content
   end
 
-  def has_anchor?(links, link)
-    anchor = link.gsub(/^.+#/, "")
-    links.has_key?(anchor) && links[anchor] == :anchor
-  end
-
-
-  def absolute_reference?(link)
-    link.start_with?(@root)
-  end
-
-  def relative_reference?(link)
-    link =~ /^\/.+/
-  end
-
-  def collect_links(url, parent_url)
-    links = {}
-    content = open_reference(:local_page, url, parent_url)
-    if content
-      doc = Nokogiri(content)
-      doc.xpath("//img").reject {|img| ignored?(img['src'])}.each do |img|
-        link_kind = detect_link_and_kind(img['src'], url, :remote_image, :local_image)
-        links.merge!(link_kind) unless link_kind.empty?    
+  def fetch_from_the_web(link)
+    begin
+      uri = create_absolute_reference(link.url)
+      if link.local_page?
+        content = open(uri)
+      elsif link.local_image?
+        open(uri)
+      elsif @visit_references
+        open(uri)
       end
-      doc.xpath("//a").reject {|a| ignored?(a['href'])}.each do |a|
-        link_kind = detect_link_and_kind(a['href'], url, :remote_page, :local_page)
-        links.merge!(link_kind) unless link_kind.empty?
-      end
-    
-      doc.xpath("//a").reject {|a| !a['id']}.each do |a|
-        links.merge!({a['id'] => :anchor})
-      end
+    rescue => e
+      raise "(#{e.message.strip})"
     end
-    links
+    content
   end
 
-  def detect_link_and_kind(reference, url, external_kind, local_kind)
-    link_kind = {}
-    link = URI(strip_trailing_slash(reference))
-    if link.to_s.start_with?(@root)
-      new_problem(url, "#{link} (absolute path)")
-    else
-      if URI(reference).absolute?
-        link_kind[link.to_s] = external_kind
-      else
-        link_kind[create_absolute_reference(link.to_s)] = local_kind
-      end
-    end
-    link_kind
+  def add_index_html(path)
+    path.end_with?(".html") ? path : File.join(path, "index.html")
   end
 
-  def strip_trailing_slash(link)
-    link.gsub(/\/$/, "")
+  def remove_index_html(path)
+    path.gsub(/\/index.html$/, "")
   end
 
-  def strip_root(link)
+  def collect_links(link)
+    content = open_reference(link)
+    return Page.parse(content, @ignore_list, @root)
+  end
+
+  def strip_root(link) # FIXME don't need
     if link
       link.gsub(/^#{@root}[\/]?/, "")
     else
@@ -181,37 +166,21 @@ class SiteChecker
     end
   end
 
-  def add_index_html(path)
-    path.end_with?(".html") ? path : File.join(path, "index.html") 
-  end
-
-  def remove_index_html(path)
-    path.gsub(/\/index.html$/, "")
-  end
-
   def create_absolute_reference(link)
+    # FIXME this needs to be where the open/fetch is
     root = URI(@root)
     if root.absolute?
       root.merge(link).to_s.gsub(/\/$/, "")
     else
-      File.join(root.path, link)
+      # FIXME this is ugly
+      if link.start_with?(root.path)
+        link
+      else
+        File.join(root.path, link)
+      end
     end
   end
 
-  def new_problem(url, message)
-    url = @root if url.empty?
-    @problems[url] = [] unless problems.has_key?(url)
-    @problems[url] << message
-  end
-
-  def ignored?(link)
-    if link
-      @ignore_list.include? link
-    else
-      true
-    end
-  end
-  
   def stop_recursion?
     if @max_recursion_depth == -1
       false
@@ -219,6 +188,18 @@ class SiteChecker
       false
     else
       true
+    end
+  end
+
+  def until_issue_7(link)
+    if link.end_with?("/")
+      link.gsub(/\/$/, "")
+    elsif !link.start_with?("/") && URI(@root).merge(link).absolute?
+      link.gsub(/\/$/, "")
+    elsif link.start_with?("/")
+      link.gsub(/^\//, "")
+    else
+      link
     end
   end
 end
