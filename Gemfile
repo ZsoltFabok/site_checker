@@ -4,6 +4,7 @@ gem 'nokogiri' , '1.5.5'
 
 group :development do
   gem 'rspec', '2.11.0'
+  gem 'webmock', '1.9.0'
   gem 'rake', '10.0.3'
   gem 'guard-rspec', '2.1.0'
   gem 'rb-fsevent', '0.9.2'

@@ -23,7 +23,7 @@ class Page
 	private
 	def self.set_location(links, root)
 		links.each do |link|
-	    uri = URI(strip_trailing_slash(link.url))
+	    uri = URI(link.url)
 	    if uri.to_s.start_with?(root)
 	    	link.problem = "(absolute path)"
 	    else
@@ -44,7 +44,7 @@ class Page
     end
   end
 
-  def self.strip_trailing_slash(link)
+  def self.strip_trailing_slash(link) # TODO
     link.gsub(/\/$/, "")
   end
 
