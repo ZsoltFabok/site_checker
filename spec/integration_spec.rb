@@ -26,7 +26,7 @@ describe "Integration" do
       webmock(@test_url, 200, content)
       webmock("http://external.org", 200, "")
       @checker.check(@test_url, @root)
-      @checker.remote_pages.should eql(["http://external.org" ])
+      @checker.remote_pages.should eql(["http://external.org/" ])
       @checker.problems.should be_empty
     end
 
@@ -45,7 +45,7 @@ describe "Integration" do
       webmock(@test_url, 200, content)
       webmock("http://external.org", 404, "")
       @checker.check(@test_url, @root)
-      @checker.problems.should eql({@test_url => ["http://external.org (404)"]})
+      @checker.problems.should eql({@test_url => ["http://external.org/ (404)"]})
     end
 
     it "should check the link to an external image" do
@@ -123,7 +123,7 @@ describe "Integration" do
       webmock(@test_url, 200, content)
       webmock("#{@root}/one-level-down", 404, "<html></html>")
       @checker.check(@test_url, @root)
-      @checker.problems.should eql({@test_url => ["one-level-down (404)"]})
+      @checker.problems.should eql({@test_url => ["/one-level-down (404)"]})
     end
   end
 
@@ -139,7 +139,7 @@ describe "Integration" do
       filesystemmock("index.html", content)
       filesystemmock("/one-level-down/index.html", content)
       @checker.check(fs_test_path, @root)
-      @checker.local_pages.should eql([fs_test_path, "one-level-down"])
+      @checker.local_pages.should eql([fs_test_path, "/one-level-down"])
       @checker.problems.should be_empty
     end
 
@@ -147,7 +147,7 @@ describe "Integration" do
       content = "<html>text<a href=\"/one-level-down\"/></html>"
       filesystemmock("index.html", content)
       @checker.check(fs_test_path, @root)
-      @checker.problems.should eql({fs_test_path => ["one-level-down (404 Not Found)"]})
+      @checker.problems.should eql({fs_test_path => ["/one-level-down (404 Not Found)"]})
     end
 
     it "should use the local images" do
@@ -155,7 +155,7 @@ describe "Integration" do
       filesystemmock("index.html", content)
       filesystemmock("a.png", "")
       @checker.check(fs_test_path, @root)
-      @checker.local_images.should eql(["a.png"])
+      @checker.local_images.should eql(["/a.png"])
       @checker.problems.should be_empty
     end
 
@@ -163,7 +163,7 @@ describe "Integration" do
       content = "<html>text<img src=\"/a.png\"/></html>"
       filesystemmock("index.html", content)
       @checker.check(fs_test_path, @root)
-      @checker.problems.should eql({fs_test_path => ["a.png (404 Not Found)"]})
+      @checker.problems.should eql({fs_test_path => ["/a.png (404 Not Found)"]})
     end
   end
 end

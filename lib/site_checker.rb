@@ -77,7 +77,6 @@ class SiteChecker
 
     links.each do |link|
       link.parent_url = parent.url
-link.url = until_issue_7(link.url) # TODO
       unless link.anchor?
         visit(link) unless visited?(link)
       else
@@ -131,18 +130,6 @@ link.url = until_issue_7(link.url) # TODO
       false
     else
       true
-    end
-  end
-
-  def until_issue_7(link)
-    if link.end_with?("/")
-      link.gsub(/\/$/, "")
-    elsif !link.start_with?("/") && URI(@root).merge(link).absolute?
-      link.gsub(/\/$/, "")
-    elsif link.start_with?("/")
-      link.gsub(/^\//, "")
-    else
-      link
     end
   end
 end
