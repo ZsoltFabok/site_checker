@@ -38,6 +38,7 @@ class Page
 	    uri = URI(link.url)
 	    if uri.to_s.start_with?(root)
 	    	link.problem = "(absolute path)"
+	    	link.location = :local
 	    else
 	      if uri.absolute?
 	        link.location = :remote

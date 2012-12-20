@@ -75,12 +75,14 @@ describe "Integration" do
     it "should report a problem for a local page with absolute path" do
       content = "<html>text<a href=\"#{@test_url}/another\"/></html>"
       webmock(@test_url, 200, content)
+      webmock("#{@test_url}/another", 200, "")
       @checker.check(@test_url, @root)
       @checker.problems.should eql({@test_url => ["#{@test_url}/another (absolute path)"]})
     end
 
     it "should report a problem for a local image with absolute path" do
       content = "<html>text<img src=\"#{@test_url}/a.png\"/></html>"
+      webmock("#{@test_url}/a.png", 200, "")
       webmock(@test_url, 200, content)
       @checker.check(@test_url, @root)
       @checker.problems.should eql({@test_url => ["#{@test_url}/a.png (absolute path)"]})

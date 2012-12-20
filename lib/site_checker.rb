@@ -95,15 +95,13 @@ class SiteChecker
 
   def visit(link)
     register_visit(link)
-    unless link.has_problem?
-      unless link.local_page?
-        open_reference(link)
-      else
-        unless stop_recursion?
-          @recursion_depth += 1
-          process_local_page(link)
-          @recursion_depth -= 1
-        end
+    unless link.local_page?
+      open_reference(link)
+    else
+      unless stop_recursion?
+        @recursion_depth += 1
+        process_local_page(link)
+        @recursion_depth -= 1
       end
     end
   end

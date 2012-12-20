@@ -40,7 +40,7 @@ describe Page do
 			content = "<html><a href=\"#{@root}/link1\">link</a>text</html>"
 			links = Page.parse(content, [], @root)
 			links.should eql([Link.create({:url => "#{@root}/link1"})])
-			assert_link(links[0], :page, nil, true, "(absolute path)")
+			assert_link(links[0], :page, :local, true, "(absolute path)")
 		end
 
 		it "should return a remote link" do
