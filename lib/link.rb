@@ -6,7 +6,7 @@ class Link
 	attr_accessor :problem
 
 	def eql?(other)
-    @url.eql? other.url
+    ignore_trailing_slash(@url).eql? ignore_trailing_slash(other.url)
   end
 
   def ==(other)
@@ -14,7 +14,7 @@ class Link
   end
 
   def hash
-    @url.hash
+    ignore_trailing_slash(@url).hash
   end
 
   def self.create(attrs)
@@ -41,5 +41,10 @@ class Link
 
   def anchor?
   	@kind == :anchor
+  end
+
+  private
+  def ignore_trailing_slash(url)
+    url.gsub(/^\//,"")
   end
 end
