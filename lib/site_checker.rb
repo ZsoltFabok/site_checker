@@ -7,13 +7,39 @@ require 'link'
 class SiteChecker
   attr_accessor :ignore_list, :visit_references, :max_recursion_depth
 
-  def initialize()
+  ##
+  # The following configuration options, which can be used together, are available:
+  #
+  # - ignoring certain links:
+  #
+  #     site_checker = SiteChecker.new do |s|
+  #       s.ignore_list = ["/", "/atom.xml"]
+  #     end
+  #
+  # - visit the external references as well:
+  #
+  #     site_checker = SiteChecker.new do |s|
+  #       s.visit_references = true
+  #     end
+  #
+  # - set the depth of the recursion:
+  #
+  #     site_checker = SiteChecker.new do |s|
+  #       s.max_recursion_depth = 3
+  #     end
+  def initialize
     yield self if block_given?
     @ignore_list ||= []
     @visit_references ||= false
     @max_recursion_depth ||= -1
   end
 
+  ##
+  # Recursively visits the provided url looking for reference problems.
+  #
+  # @param [String] url where the processing starts
+  # @param [String] root the root URL of the site
+  #
   def check(url, root)
     @links = []
     @recursion_depth = 0
@@ -27,22 +53,47 @@ class SiteChecker
     evaluate_anchors
   end
 
+  ##
+  # Returns the Array of the visited local pages.
+  #
+  # @return [Array] list of the visited local pages
+  #
   def local_pages
     get_urls(:local, :page)
   end
 
+  ##
+  # Returns the Array of the visited remote (external) pages.
+  #
+  # @return [Array] list of the visited remote pages
+  #
   def remote_pages
     get_urls(:remote, :page)
   end
 
+  ##
+  # Returns the Array of the visited local images.
+  #
+  # @return [Array] list of the visited local images
+  #
   def local_images
     get_urls(:local, :image)
   end
 
+  ##
+  # Returns the Array of the visited remote (external) images.
+  #
+  # @return [Array] list of the visited remote images
+  #
   def remote_images
     get_urls(:remote, :image)
   end
 
+  ##
+  # Returns the Hash (:parent_url => [Array of problematic links]) of the problems.
+  #
+  # @return [Hash] the result of the check
+  #
   def problems
     problems = {}
     @links.each do |link|

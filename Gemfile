@@ -10,4 +10,5 @@ group :development do
   gem 'rb-fsevent', '0.9.2'
   gem 'ruby-debug', '0.10.4', :platforms => 'ruby_18'
   gem 'debugger', '1.2.0', :platforms => 'ruby_19'
+  gem 'yard', '0.8.0'
 end
