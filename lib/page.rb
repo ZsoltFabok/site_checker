@@ -7,13 +7,9 @@ class Page
 		links = []
 		page = Nokogiri(content)
 
-		page.xpath("//a").reject {|a| ignored?(ignore_list, a['href'])}.each do |a|
-			links << Link.create({:url => strip_trailing_slash(a['href']), :kind => :page})
-		end
+		links.concat(get_links(page, ignore_list))
+		links.concat(get_images(page, ignore_list))
 
-		page.xpath("//img").reject {|img| ignored?(ignore_list, img['src'])}.each do |img|
-			links << Link.create({:url => img['src'], :kind => :image})
-		end
 
 		set_location(links, root)
 		set_anchors(links, page)
@@ -21,6 +17,22 @@ class Page
 	end
 
 	private
+	def self.get_links(page, ignore_list)
+		links = []
+		page.xpath("//a").reject {|a| ignored?(ignore_list, a['href'])}.each do |a|
+			links << Link.create({:url => strip_trailing_slash(a['href']), :kind => :page})
+		end
+		links
+	end
+
+	def self.get_images(page, ignore_list)
+		links = []
+		page.xpath("//img").reject {|img| ignored?(ignore_list, img['src'])}.each do |img|
+			links << Link.create({:url => img['src'], :kind => :image})
+		end
+		links
+	end
+
 	def self.set_location(links, root)
 		links.each do |link|
 	    uri = URI(link.url)
