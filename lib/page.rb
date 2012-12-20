@@ -7,30 +7,34 @@ class Page
 		links = []
 		page = Nokogiri(content)
 
-		links.concat(get_links(page, ignore_list))
-		links.concat(get_images(page, ignore_list))
+		links.concat(get_links(page, ignore_list, root))
+		links.concat(get_images(page, ignore_list, root))
+		links.concat(get_anchors(page))
+		links.concat(local_pages_which_has_anchor_references(links, root))
 
-
-		set_location(links, root)
-		set_anchors(links, page)
-		links
+		links.uniq
 	end
 
 	private
-	def self.get_links(page, ignore_list)
+	def self.get_links(page, ignore_list, root)
 		links = []
 		page.xpath("//a").reject {|a| ignored?(ignore_list, a['href'])}.each do |a|
-			links << Link.create({:url => a['href'], :kind => :page})
+			if a['href'].match(/(.*)#.+/) && !URI($1).absolute?
+				kind = :anchor_ref
+			else
+				kind = :page
+			end
+			links << Link.create({:url => a['href'], :kind => kind})
 		end
-		links
+		set_location(links, root)
 	end
 
-	def self.get_images(page, ignore_list)
+	def self.get_images(page, ignore_list, root)
 		links = []
 		page.xpath("//img").reject {|img| ignored?(ignore_list, img['src'])}.each do |img|
 			links << Link.create({:url => img['src'], :kind => :image})
 		end
-		links
+		set_location(links, root)
 	end
 
 	def self.set_location(links, root)
@@ -57,19 +61,22 @@ class Page
     end
   end
 
-  def self.get_local_anchor_references(page)
-  	page.xpath("//a").reject {|a| !a['id']}.map {|a| a['id']}
+  def self.get_anchors(page)
+  	anchors = []
+  	page.xpath("//a").reject {|a| !a['id']}.each do |a|
+  		anchors << Link.create({:url => a['id'], :kind => :anchor})
+  	end
+  	anchors
   end
 
-  def self.set_anchors(links, page)
-  	refs = get_local_anchor_references(page)
-  	links.each do |link|
-  		if link.url.start_with?("#")
-  			link.kind = :anchor
-  			if !refs.include?(link.url.gsub(/#/, ""))
-  				link.problem = "(404 Not Found)"
-  			end
+  def self.local_pages_which_has_anchor_references(links, root)
+  	new_links = []
+  	links.find_all {|link| link.anchor_ref?}.each do |link|
+  		uri = URI(link.url)
+  		if link.url.match(/(.+)#/)
+  			new_links << Link.create({:url => $1, :kind => :page})
   		end
   	end
+  	set_location(new_links, root)
   end
 end

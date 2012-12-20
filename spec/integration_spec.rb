@@ -112,6 +112,14 @@ describe "Integration" do
       @checker.problems.should eql({@test_url => ["#goto (404 Not Found)"]})
     end
 
+    it "should follow an external anchor to the external page" do
+      content = "<html><a href=\"http://example.org#goto\">goto</a></html>"
+      webmock(@test_url, 200, content)
+      webmock("http://example.org", 200, content)
+      @checker.check(@test_url, @root)
+      @checker.problems.should be_empty
+    end
+
     it "should go down one level down for an internal page" do
       content = "<html>text<a href=\"/one-level-down\"/></html>"
       webmock(@test_url, 200, content)
@@ -166,6 +174,15 @@ describe "Integration" do
       filesystemmock("index.html", content)
       @checker.check(fs_test_path, @root)
       @checker.problems.should eql({fs_test_path => ["/a.png (404 Not Found)"]})
+    end
+
+    it "should be able to handle anchors in other files" do
+      content = "<html><a href=\"/other#goto\">goto</a>text<a id=\"goto\"></a></html>"
+      content2 = "<html><a id=\"goto\">goto</a>"
+      filesystemmock("index.html", content)
+      filesystemmock("other/index.html", content2)
+      @checker.check(fs_test_path, @root)
+      @checker.problems.should be_empty
     end
   end
 end

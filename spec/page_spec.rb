@@ -22,18 +22,12 @@ describe Page do
 			assert_link(links[1], :image, :local, false)
 		end
 
-		it "should return an anchor" do
+		it "should return an anchor with its anchor reference" do
 			content = "<html><a href=\"#goto\">link</a>text<a id=\"goto\"></a></html>"
 			links = Page.parse(content, [], @root)
-			links.should eql([Link.create({:url => "#goto"})])
-			assert_link(links[0], :anchor, :local, false)
-		end
-
-		it "should mark an anchor which refers to a non existing reference" do
-			content = "<html><a href=\"#goto\">link</a></html>"
-			links = Page.parse(content, [], @root)
-			links.should eql([Link.create({:url => "#goto"})])
-			assert_link(links[0], :anchor, :local, true, "(404 Not Found)")
+			links.should eql([Link.create({:url => "#goto"}), Link.create({:url => "goto"})])
+			assert_link(links[0], :anchor_ref, :local, false)
+			assert_link(links[1], :anchor, nil, false)
 		end
 
 		it "should mark an absolute link" do
@@ -61,6 +55,13 @@ describe Page do
 		it "should not return ignored links" do
 			content = "<html><a href=\"link1\">link</a>text<a href=\"link2\">link</a></html>"
 			links = Page.parse(content, ["link2"], @root)
+			links.should eql([Link.create({:url => "link1"})])
+			assert_link(links[0], :page, :local, false)
+		end
+
+		it "should return a link only once" do
+			content = "<html><a href=\"link1\">link</a>text<a href=\"link1\">link</a></html>"
+			links = Page.parse(content, [], @root)
 			links.should eql([Link.create({:url => "link1"})])
 			assert_link(links[0], :page, :local, false)
 		end

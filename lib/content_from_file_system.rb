@@ -25,6 +25,7 @@ class ContentFromFileSystem
 
   private
   def add_index_html(path)
+    path = $1 if path.match(/(.+)#/)
     path.end_with?(".html") ? path : File.join(path, "index.html")
   end
 

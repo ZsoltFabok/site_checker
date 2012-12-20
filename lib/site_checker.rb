@@ -24,6 +24,7 @@ class SiteChecker
     link = Link.create({:url => url, :kind => :page, :location => :local})
     register_visit(link)
     process_local_page(link)
+    evaluate_anchors
   end
 
   def local_pages
@@ -77,7 +78,7 @@ class SiteChecker
 
     links.each do |link|
       link.parent_url = parent.url
-      unless link.anchor?
+      unless link.anchor_related?
         visit(link) unless visited?(link)
       else
         @links << link
@@ -129,5 +130,28 @@ class SiteChecker
     else
       true
     end
+  end
+
+  def evaluate_anchors
+    anchors = @links.find_all {|link| link.anchor?}
+    anchor_references = @links.find_all {|link| link.anchor_ref?}
+    anchor_references.each do |anchor_ref|
+      if find_matching_anchor(anchors, anchor_ref).empty?
+        anchor_ref.problem = "(404 Not Found)"
+      end
+    end
+  end
+
+  def find_matching_anchor(anchors, anchor_ref)
+    result = []
+    anchors.each do |anchor|
+      if (anchor.parent_url == anchor_ref.parent_url &&
+            anchor_ref.url == "##{anchor.url}") ||
+          (anchor.parent_url != anchor_ref.parent_url &&
+            anchor_ref.url == "#{anchor.parent_url}##{anchor.url}")
+        result << anchor
+      end
+    end
+    result
   end
 end

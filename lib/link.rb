@@ -43,6 +43,14 @@ class Link
   	@kind == :anchor
   end
 
+  def anchor_ref?
+    @kind == :anchor_ref
+  end
+
+  def anchor_related?
+    anchor? || anchor_ref?
+  end
+
   private
   def ignore_trailing_slash(url)
     url.gsub(/^\//,"")

@@ -29,6 +29,27 @@ describe Link do
 		end
 	end
 
+	context "#anchor_ref?" do
+		it "should return true for an anchor_ref" do
+			Link.create({:kind => :anchor_ref}).anchor_ref?.should be_true
+		end
+
+		it "should return false for non anchor ref" do
+			Link.create({:kind => :page}).anchor_ref?.should be_false
+		end
+	end
+
+	context "#anchor_related?" do
+		it "should return true for an anchor_ref" do
+			Link.create({:kind => :anchor_ref}).anchor_related?.should be_true
+			Link.create({:kind => :anchor}).anchor_related?.should be_true
+		end
+
+		it "should return false for non anchor ref" do
+			Link.create({:kind => :page}).anchor_related?.should be_false
+		end
+	end
+
 	context "#local_page?" do
 		it "should return true if the page is local" do
 			Link.create({:kind => :page, :location => :local}).local_page?.should be_true
