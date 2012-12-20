@@ -20,7 +20,7 @@ class Page
 	def self.get_links(page, ignore_list)
 		links = []
 		page.xpath("//a").reject {|a| ignored?(ignore_list, a['href'])}.each do |a|
-			links << Link.create({:url => strip_trailing_slash(a['href']), :kind => :page})
+			links << Link.create({:url => a['href'], :kind => :page})
 		end
 		links
 	end
@@ -54,10 +54,6 @@ class Page
     else
       true
     end
-  end
-
-  def self.strip_trailing_slash(link) # TODO
-    link.gsub(/\/$/, "")
   end
 
   def self.get_local_anchor_references(page)

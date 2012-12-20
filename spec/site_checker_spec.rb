@@ -15,7 +15,7 @@ describe SiteChecker do
       content_reader = mock()
       @checker.should_receive(:get_content_reader).and_return(content_reader)
       localhost = Link.create({:url => "http://localhost:4000"})
-      external = Link.create({:url => "http://external.org"}) # TODO issue 7!
+      external = Link.create({:url => "http://external.org/"})
       content_reader.should_receive(:get).with(localhost).and_return(content)
       content_reader.should_receive(:get).with(external)
       @checker.check(@test_url, @root)
