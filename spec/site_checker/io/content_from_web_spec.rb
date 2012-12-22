@@ -1,12 +1,14 @@
 require 'spec_helper'
+require_relative 'io_spec_helper'
 
-describe ContentFromWeb do
+describe SiteChecker::IO::ContentFromWeb do
+	include IoSpecHelper
 	context "#get" do
 		before(:each) do
 			@root = "http://localhost:4000"
-			@link = Link.create({:url => "link", :kind => :page, :location => :local})
+			@link = SiteChecker::Link.create({:url => "link", :kind => :page, :location => :local})
 			@content = mock()
-			@content_reader = ContentFromWeb.new(false, @root)
+			@content_reader = SiteChecker::IO::ContentFromWeb.new(false, @root)
 		end
 
 		it "should return the content of a link" do
@@ -34,7 +36,7 @@ describe ContentFromWeb do
 		end
 
 		it "should open a remote reference if opt-in" do
-			@content_reader = ContentFromWeb.new(true, @root)
+			@content_reader = SiteChecker::IO::ContentFromWeb.new(true, @root)
 			@link.location = :remote
 			@link.url = "http://example.org"
       @content_reader.should_receive(:open).with(URI(@link.url))

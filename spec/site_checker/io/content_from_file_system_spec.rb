@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe ContentFromFileSystem do
+describe SiteChecker::IO::ContentFromFileSystem do
   context "#get" do
     before(:each) do
       @root = "/home/test/web/public"
-      @link = Link.create({:url => "link", :kind => :page, :location => :local})
+      @link = SiteChecker::Link.create({:url => "link", :kind => :page, :location => :local})
       @file = mock(File)
       @content = mock()
-      @content_reader = ContentFromFileSystem.new(false, @root)
+      @content_reader = SiteChecker::IO::ContentFromFileSystem.new(false, @root)
     end
 
     it "should return the content of a link using the local index.html" do
@@ -50,7 +50,7 @@ describe ContentFromFileSystem do
     end
 
     it "should open a remote reference if opt-in" do
-      @content_reader = ContentFromFileSystem.new(true, @root)
+      @content_reader = SiteChecker::IO::ContentFromFileSystem.new(true, @root)
       @link.location = :remote
       @link.url = "http://example.org"
       File.should_not_receive(:open)
