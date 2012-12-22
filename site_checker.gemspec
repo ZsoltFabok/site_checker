@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   s.name        = 'site_checker'
-  s.version     = '0.2.0'
-  s.date        = '2012-12-20'
+  s.version     = '0.2.0.pre'
+  s.date        = '2012-12-22'
   s.summary     = "site_checker-#{s.version}"
   s.description = "A simple tool for checking references on your website"
   s.authors     = ["Zsolt Fabok"]
@@ -15,9 +15,10 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_development_dependency('rspec', '2.12.0')
+  s.add_development_dependency('rspec'  , '2.12.0')
   s.add_development_dependency('webmock', '1.9.0')
-  s.add_development_dependency('rake', '10.0.3')
-  s.add_development_dependency('yard', '0.8.3')
+  s.add_development_dependency('rake'   , '10.0.3')
+  s.add_development_dependency('yard'   , '0.8.3')
+
   s.add_runtime_dependency('nokogiri', '1.5.6')
 end
