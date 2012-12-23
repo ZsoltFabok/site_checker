@@ -10,7 +10,7 @@ module SiteChecker
     end
 
     def check(url, root)
-      @links = []
+      @links = {}
       @recursion_depth = 0
       @root = root
 
@@ -40,7 +40,7 @@ module SiteChecker
 
     def problems
       problems = {}
-      @links.each do |link|
+      @links.keys.each do |link|
         if link.has_problem?
           problems[link.parent_url] ||= []
           problems[link.parent_url] << "#{link.url} #{link.problem}"
@@ -59,7 +59,7 @@ module SiteChecker
     end
 
     def get_urls(location, kind)
-      @links.find_all do |link|
+      @links.keys.find_all do |link|
         if link.location == location && link.kind == kind
           link
         end
@@ -76,17 +76,17 @@ module SiteChecker
         unless link.anchor_related?
           visit(link) unless visited?(link)
         else
-          @links << link
+          @links[link] = nil
         end
       end
     end
 
     def register_visit(link)
-      @links << link unless visited?(link)
+      @links[link] = nil unless visited?(link)
     end
 
     def visited?(link)
-      @links.include?(link)
+      @links.has_key?(link)
     end
 
     def visit(link)
@@ -128,8 +128,8 @@ module SiteChecker
     end
 
     def evaluate_anchors
-      anchors = @links.find_all {|link| link.anchor?}
-      anchor_references = @links.find_all {|link| link.anchor_ref?}
+      anchors = @links.keys.find_all {|link| link.anchor?}
+      anchor_references = @links.keys.find_all {|link| link.anchor_ref?}
       anchor_references.each do |anchor_ref|
         if find_matching_anchor(anchors, anchor_ref).empty?
           anchor_ref.problem = "(404 Not Found)"

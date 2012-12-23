@@ -1,13 +1,14 @@
 module SiteChecker
   class Link
   	attr_accessor :url
+    attr_accessor :modified_url
   	attr_accessor :parent_url
   	attr_accessor :kind
   	attr_accessor :location
   	attr_accessor :problem
 
   	def eql?(other)
-      ignore_trailing_slash(@url).eql? ignore_trailing_slash(other.url)
+      @modified_url.eql? other.modified_url
     end
 
     def ==(other)
@@ -15,7 +16,7 @@ module SiteChecker
     end
 
     def hash
-      ignore_trailing_slash(@url).hash
+      @modified_url.hash
     end
 
     def self.create(attrs)
@@ -26,6 +27,16 @@ module SiteChecker
     		end
     	end
     	link
+    end
+
+    def parent_url=(parent_url)
+      @modified_url = "#{parent_url}##{@url}" if anchor?
+      @parent_url = parent_url
+    end
+
+    def url=(url)
+      @modified_url = ignore_trailing_slash(url)
+      @url = url
     end
 
     def has_problem?
