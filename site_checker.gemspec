@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   s.name        = 'site_checker'
-  s.version     = '0.2.0'
-  s.date        = '2012-12-23'
+  s.version     = '0.2.1'
+  s.date        = '2012-12-31'
   s.summary     = "site_checker-#{s.version}"
   s.description = "A simple tool for checking references on your website"
   s.authors     = ["Zsolt Fabok"]

@@ -1,3 +1,7 @@
+## [v0.2.1](https://github.com/ZsoltFabok/site_checker/compare/v0.2.0...v0.2.1)
+### Other Changes
+* less strict gem dependencies (Zsolt Fabok)
+
 ## [v0.2.0](https://github.com/ZsoltFabok/site_checker/compare/v0.1.1...v0.2.0)
 
 ### Notes
