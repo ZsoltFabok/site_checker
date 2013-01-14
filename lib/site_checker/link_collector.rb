@@ -9,10 +9,10 @@ module SiteChecker
       @max_recursion_depth ||= -1
     end
 
-    def check(url, root)
+    def check(url, root=nil)
       @links = {}
       @recursion_depth = 0
-      @root = root
+      @root = figure_out_root(url,root)
 
       @content_reader = get_content_reader
 
@@ -50,6 +50,18 @@ module SiteChecker
     end
 
     private
+    def figure_out_root(url, root)
+      unless root
+        url_uri = URI(url)
+        if url_uri.absolute?
+          root = "#{url_uri.scheme}://#{url_uri.host}"
+        else
+          root = url
+        end
+      end
+      root
+    end
+
     def get_content_reader
       if URI(@root).absolute?
         SiteChecker::IO::ContentFromWeb.new(@visit_references, @root)

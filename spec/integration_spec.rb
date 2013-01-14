@@ -188,4 +188,34 @@ describe "Integration" do
       SiteChecker.problems.should be_empty
     end
   end
+
+  describe "without root argument" do
+    before(:each) do
+      @test_url = "http://localhost:4000"
+    end
+
+    it "should check the link to an external page" do
+      content = "<html>text<a href=\"http://external.org/\"/></html>"
+      webmock(@test_url, 200, content)
+      webmock("http://external.org", 200, "")
+      SiteChecker.check(@test_url)
+      SiteChecker.remote_pages.should eql(["http://external.org/" ])
+      SiteChecker.problems.should be_empty
+    end
+
+    it "should report a problem for a local page with absolute path" do
+      content = "<html>text<a href=\"#{@test_url}/another\"/></html>"
+      webmock(@test_url, 200, content)
+      webmock("#{@test_url}/another", 200, "")
+      SiteChecker.check(@test_url)
+      SiteChecker.problems.should eql({@test_url => ["#{@test_url}/another (absolute path)"]})
+    end
+
+    it "should report a problem when the local image cannot be found" do
+      content = "<html>text<img src=\"/a.png\"/></html>"
+      filesystemmock("index.html", content)
+      SiteChecker.check(fs_test_path)
+      SiteChecker.problems.should eql({fs_test_path => ["/a.png (404 Not Found)"]})
+    end
+  end
 end

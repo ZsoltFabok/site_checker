@@ -44,9 +44,9 @@ module SiteChecker
     # Recursively visits the provided url looking for reference problems.
     #
     # @param [String] url where the processing starts
-    # @param [String] root the root URL of the site
+    # @param [String] root (optional) the root URL of the site. If not provided then the method will use the url to figure it out.
     #
-    def check(url, root)
+    def check(url, root=nil)
       create_instance
       @link_collector.check(url, root)
     end
