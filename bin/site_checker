@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "site_checker"
+SiteChecker::Cli.new.start

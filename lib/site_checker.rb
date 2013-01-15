@@ -7,6 +7,8 @@ require 'site_checker/parse/page'
 require 'site_checker/link'
 require 'site_checker/link_collector'
 require 'site_checker/dsl'
+require 'site_checker/version'
+require 'site_checker/cli/cli'
 
 module SiteChecker
   class << self

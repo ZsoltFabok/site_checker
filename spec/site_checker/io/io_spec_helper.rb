@@ -1,8 +1,8 @@
 module IoSpecHelper
 	def webmock(uri, status, content)
-	stub_request(:get, uri).
-    with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-    to_return(:status => status, :body => content)
+		stub_request(:get, uri).
+	    with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+	    to_return(:status => status, :body => content)
 	end
 
 	def filesystemmock(uri, content)
