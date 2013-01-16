@@ -5,7 +5,7 @@ module CliSpecHelper
   include IoSpecHelper
 
   def exec(command, arguments)
-  	stdin, stdout, stderr = Open3.popen3("ruby -Ilib #{command} #{arguments}")
+  	stdin, stdout, stderr = Open3.popen3("#{command} #{arguments}")
 		stdout.readlines.map {|line| line.chomp}.join("\n")
 	end
 
