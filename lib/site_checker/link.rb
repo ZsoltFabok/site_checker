@@ -1,13 +1,13 @@
 module SiteChecker
   class Link
-  	attr_accessor :url
+    attr_accessor :url
     attr_accessor :modified_url
-  	attr_accessor :parent_url
-  	attr_accessor :kind
-  	attr_accessor :location
-  	attr_accessor :problem
+    attr_accessor :parent_url
+    attr_accessor :kind
+    attr_accessor :location
+    attr_accessor :problem
 
-  	def eql?(other)
+    def eql?(other)
       @modified_url.eql? other.modified_url
     end
 
@@ -20,13 +20,13 @@ module SiteChecker
     end
 
     def self.create(attrs)
-    	link = Link.new
-    	attrs.each do |key, value|
-    		if self.instance_methods.include?("#{key}=".to_sym)
-    			eval("link.#{key}=value")
-    		end
-    	end
-    	link
+      link = Link.new
+      attrs.each do |key, value|
+        if self.instance_methods.map{|m| m.to_s}.include?("#{key}=")
+          eval("link.#{key}=value")
+        end
+      end
+      link
     end
 
     def parent_url=(parent_url)
@@ -40,19 +40,19 @@ module SiteChecker
     end
 
     def has_problem?
-    	@problem != nil
+      @problem != nil
     end
 
     def local_page?
-    	@location == :local && @kind == :page
+      @location == :local && @kind == :page
     end
 
     def local_image?
-    	@location == :local && @kind == :image
+      @location == :local && @kind == :image
     end
 
     def anchor?
-    	@kind == :anchor
+      @kind == :anchor
     end
 
     def anchor_ref?
