@@ -1,3 +1,13 @@
+## [v0.3.0](https://github.com/ZsoltFabok/site_checker/compare/v0.2.1...v0.3.0)
+### Notes
+* the root argument is no longer mandatory (Zsolt Fabok)
+
+### Other Changes
+* you can use site_checker from the command line. Type site_checker -h for more details (Zsolt Fabok)
+
+### Fixes
+* the library is ruby 1.8 compatible (Zsolt Fabok)
+
 ## [v0.2.1](https://github.com/ZsoltFabok/site_checker/compare/v0.2.0...v0.2.1)
 ### Other Changes
 * less strict gem dependencies (Zsolt Fabok)
