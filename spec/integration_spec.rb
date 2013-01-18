@@ -29,7 +29,7 @@ describe "Integration" do
       webmock(@test_url, 200, content)
       webmock("http://external.org", 200, "")
       SiteChecker.check(@test_url, @root)
-      SiteChecker.remote_pages.should eql(["http://external.org/" ])
+      SiteChecker.remote_pages.sort.should eql(["http://external.org/" ])
       SiteChecker.problems.should be_empty
     end
 
@@ -152,7 +152,7 @@ describe "Integration" do
       filesystemmock("index.html", content)
       filesystemmock("/one-level-down/index.html", content)
       SiteChecker.check(fs_test_path, @root)
-      SiteChecker.local_pages.should eql([fs_test_path, "/one-level-down"])
+      SiteChecker.local_pages.sort.should eql(["/one-level-down", fs_test_path])
       SiteChecker.problems.should be_empty
     end
 
@@ -168,7 +168,7 @@ describe "Integration" do
       filesystemmock("index.html", content)
       filesystemmock("a.png", "")
       SiteChecker.check(fs_test_path, @root)
-      SiteChecker.local_images.should eql(["/a.png"])
+      SiteChecker.local_images.sort.should eql(["/a.png"])
       SiteChecker.problems.should be_empty
     end
 
@@ -199,7 +199,7 @@ describe "Integration" do
       webmock(@test_url, 200, content)
       webmock("http://external.org", 200, "")
       SiteChecker.check(@test_url)
-      SiteChecker.remote_pages.should eql(["http://external.org/" ])
+      SiteChecker.remote_pages.sort.should eql(["http://external.org/" ])
       SiteChecker.problems.should be_empty
     end
 
