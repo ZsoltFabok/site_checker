@@ -1,4 +1,4 @@
-###Site Checker [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/ZsoltFabok/site_checker) [![Build Status](https://travis-ci.org/ZsoltFabok/site_checker.png)](https://travis-ci.org/ZsoltFabok/site_checker) [![Dependency Status](https://gemnasium.com/ZsoltFabok/site_checker.png)](https://gemnasium.com/ZsoltFabok/site_checker)
+###Site Checker [![Code Climate](https://codeclimate.com/github/ZsoltFabok/site_checker.png)](https://codeclimate.com/github/ZsoltFabok/site_checker) [![Build Status](https://travis-ci.org/ZsoltFabok/site_checker.png)](https://travis-ci.org/ZsoltFabok/site_checker) [![Dependency Status](https://gemnasium.com/ZsoltFabok/site_checker.png)](https://gemnasium.com/ZsoltFabok/site_checker)
 
 
 Site Checker is a simple ruby gem, which helps you check the integrity of your website by recursively visiting the referenced pages and images. I use it in my test environments to make sure that my websites don't have any dead links.
