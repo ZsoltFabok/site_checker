@@ -8,6 +8,10 @@ rescue LoadError
   require "ruby-debug"
 end
 
+# coveralls for github badge
+require 'coveralls'
+Coveralls.wear!
+
 require File.expand_path('../../lib/site_checker', __FILE__)
 
 # common
