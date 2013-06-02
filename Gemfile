@@ -7,4 +7,4 @@ group :development do
   gem 'reek'
 end
 
-gem 'coveralls', require: false
+gem 'coveralls', :require => false
