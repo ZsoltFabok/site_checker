@@ -1,8 +1,8 @@
 module IoSpecHelper
-  def webmock(uri, status, content)
+  def webmock(uri, status, content, headers = {"Content-Type"=>"text/html; charset=UTF-8"})
     stub_request(:get, uri).
       with(:headers => {'Accept'=>'*/*'}).\
-      to_return(:status => status, :body => content)
+      to_return(:status => status, :body => content, :headers => headers)
   end
 
   def filesystemmock(uri, content)

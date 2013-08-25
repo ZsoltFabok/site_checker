@@ -138,6 +138,14 @@ describe "Integration" do
       SiteChecker.check(@test_url, @root)
       SiteChecker.problems.should eql({@test_url => ["/one-level-down (404)"]})
     end
+
+    it "should report a problem when the content type is not an html" do
+      content = "<html>text<a href=\"/one-level-down\"/></html>"
+      webmock(@test_url, 200, content)
+      webmock("#{@root}/one-level-down", 200, "<html></html>", {"Content-Type"=>"text/plain; charset=UTF-8"})
+      SiteChecker.check(@test_url, @root)
+      SiteChecker.problems.should eql({@test_url => ["/one-level-down (not a text/html content-type)"]})
+    end
   end
 
   describe "file system based checking" do

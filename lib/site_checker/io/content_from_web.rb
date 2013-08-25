@@ -12,6 +12,9 @@ module SiteChecker
           uri = create_absolute_reference(link.url)
           if link.local_page?
             content = open(uri)
+            if !content.meta['content-type'].start_with?('text/html')
+              raise "not a text/html content-type"
+            end
           elsif link.local_image?
             open(uri)
           elsif @visit_references
