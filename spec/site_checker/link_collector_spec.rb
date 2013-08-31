@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe SiteChecker::LinkCollector do
-	context "#check" do
-	  before(:each) do
-	  	@test_url = "http://localhost:4000"
-	  	@root = "http://localhost:4000"
-	    @collector = SiteChecker::LinkCollector.new do |config|
-	      config.visit_references = true
-	    end
-	  end
+  context "#check" do
+    before(:each) do
+      @test_url = "http://localhost:4000"
+      @root = "http://localhost:4000"
+      @collector = SiteChecker::LinkCollector.new do |config|
+        config.visit_references = true
+      end
+    end
 
     it "should check a link only once" do
       content = "<html>text<a href=\"http://external.org/\"/><a href=\"http://external.org/\"/></html>"
@@ -37,5 +37,5 @@ describe SiteChecker::LinkCollector do
       @collector.check(@test_url, @root)
       @collector.problems.should be_empty
     end
-	end
+  end
 end

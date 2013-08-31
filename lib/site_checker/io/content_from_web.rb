@@ -2,12 +2,12 @@ module SiteChecker
   module IO
     class ContentFromWeb
 
-    	def initialize(visit_references, root)
-    		@visit_references = visit_references
-    		@root = root
-    	end
+      def initialize(visit_references, root)
+        @visit_references = visit_references
+        @root = root
+      end
 
-    	def get(link)
+      def get(link)
         begin
           uri = create_absolute_reference(link.url)
           if link.local_page?
