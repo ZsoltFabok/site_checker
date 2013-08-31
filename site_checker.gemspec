@@ -8,7 +8,7 @@ require 'site_checker/version'
 Gem::Specification.new do |s|
   s.name        = 'site_checker'
   s.version     = SiteChecker::VERSION
-  s.date        = '2012-12-31'
+  s.date        = '2013-08-31'
   s.summary     = "site_checker-#{s.version}"
   s.description = "A simple tool for checking references on your website"
   s.authors     = ["Zsolt Fabok"]

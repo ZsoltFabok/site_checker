@@ -1,3 +1,8 @@
+## [v0.4.0](https://github.com/ZsoltFabok/site_checker/compare/v0.3.0...v0.4.0)
+### Fixes
+* consider non-html content-type as an error (Zsolt Fabok, [issue 14](https://github.com/ZsoltFabok/site_checker/issues/14)})
+* nokogiri 1.5.6 is out-dated, but in order to be compatible with ruby 1.8, I need it (Zsolt Fabok, [issue 15](https://github.com/ZsoltFabok/site_checker/issues/15))
+
 ## [v0.3.0](https://github.com/ZsoltFabok/site_checker/compare/v0.2.1...v0.3.0)
 ### Notes
 * the root argument is no longer mandatory (Zsolt Fabok)
