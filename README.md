@@ -122,4 +122,4 @@ This error occurs when the test code calls v0.1.1 methods, but a newer version o
 
 ### Copyright
 
-Copyright (c) 2012 Zsolt Fabok and Contributors. See LICENSE for details.
+Copyright (c) 2013 Zsolt Fabok and Contributors. See LICENSE for details.
