@@ -21,13 +21,13 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_development_dependency('rspec'  , '~> 2.12')
+  s.add_development_dependency('rspec'  , '~> 3.0')
   s.add_development_dependency('webmock', '~> 1.9')
-  s.add_development_dependency('rake'   , '>= 10.0.3')
+  s.add_development_dependency('rake'   , '~> 10.0')
   s.add_development_dependency('yard'   , '~> 0.8')
 
   if RUBY_VERSION >= "1.9"
-    s.add_runtime_dependency('nokogiri', '~> 1.6.0')
+    s.add_runtime_dependency('nokogiri', '~> 1.6')
   else
     s.add_runtime_dependency('nokogiri', '~> 1.5.6')
   end
