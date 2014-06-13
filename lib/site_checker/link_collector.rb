@@ -126,7 +126,11 @@ module SiteChecker
 
     def collect_links(link)
       content = open_reference(link)
-      return SiteChecker::Parse::Page.parse(content, @ignore_list, @root)
+      if content
+        return SiteChecker::Parse::Page.parse(content, @ignore_list, @root)
+      else
+        []
+      end
     end
 
     def stop_recursion?

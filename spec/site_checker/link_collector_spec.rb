@@ -37,5 +37,15 @@ describe SiteChecker::LinkCollector do
       @collector.check(@test_url, @root)
       expect(@collector.problems).to be_empty
     end
+
+    it "should not visit a local page that does not exist and report is an error" do
+      content = "<html>text<a href=\"/one-level-down\"/></html>"
+      content_reader = double
+      expect(@collector).to receive(:get_content_reader).and_return(content_reader)
+      expect(content_reader).to receive(:get).with(create_link(@test_url)).and_return(content)
+      expect(content_reader).to receive(:get).with(create_link("/one-level-down")).and_raise(OpenURI::HTTPError.new("404 Not Found", nil))
+      @collector.check(@test_url, @root)
+      expect(@collector.problems).to eql({@test_url => ["/one-level-down 404 Not Found"]})
+    end
   end
 end
