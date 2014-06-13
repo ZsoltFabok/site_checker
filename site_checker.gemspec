@@ -30,5 +30,7 @@ Gem::Specification.new do |s|
     s.add_runtime_dependency('nokogiri', '~> 1.6')
   else
     s.add_runtime_dependency('nokogiri', '~> 1.5.6')
+    s.add_runtime_dependency('mime-types', '~> 1.25')
+    s.add_runtime_dependency('rainbow', '~> 1.1')
   end
 end
