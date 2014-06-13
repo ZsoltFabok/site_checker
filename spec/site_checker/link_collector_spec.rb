@@ -12,12 +12,12 @@ describe SiteChecker::LinkCollector do
 
     it "should check a link only once" do
       content = "<html>text<a href=\"http://external.org/\"/><a href=\"http://external.org/\"/></html>"
-      content_reader = mock()
-      @collector.should_receive(:get_content_reader).and_return(content_reader)
+      content_reader = double
+      expect(@collector).to receive(:get_content_reader).and_return(content_reader)
       localhost = create_link("http://localhost:4000")
       external = create_link("http://external.org/")
-      content_reader.should_receive(:get).with(localhost).and_return(content)
-      content_reader.should_receive(:get).with(external)
+      expect(content_reader).to receive(:get).with(localhost).and_return(content)
+      expect(content_reader).to receive(:get).with(external)
       @collector.check(@test_url, @root)
     end
 
@@ -29,13 +29,13 @@ describe SiteChecker::LinkCollector do
       one_level_down_content = "<html><a href=\"/two-levels-down\"/></html>"
       two_levels_down_content = "<html><a href=\"/three-levels-down\"/></html>"
       three_levels_down_content = "<html></html>"
-      content_reader = mock()
-      @collector.should_receive(:get_content_reader).and_return(content_reader)
-      content_reader.should_receive(:get).with(create_link(@test_url)).and_return(content)
-      content_reader.should_receive(:get).with(create_link("/one-level-down")).and_return(one_level_down_content)
-      content_reader.should_receive(:get).with(create_link("/two-levels-down")).and_return(two_levels_down_content)
+      content_reader = double
+      expect(@collector).to receive(:get_content_reader).and_return(content_reader)
+      expect(content_reader).to receive(:get).with(create_link(@test_url)).and_return(content)
+      expect(content_reader).to receive(:get).with(create_link("/one-level-down")).and_return(one_level_down_content)
+      expect(content_reader).to receive(:get).with(create_link("/two-levels-down")).and_return(two_levels_down_content)
       @collector.check(@test_url, @root)
-      @collector.problems.should be_empty
+      expect(@collector.problems).to be_empty
     end
   end
 end
