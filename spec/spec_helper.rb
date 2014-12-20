@@ -1,12 +1,6 @@
 require 'rspec'
 require 'webmock/rspec'
-
-begin
-  require "debugger"
-rescue LoadError
-  # most probably using 1.8
-  require "ruby-debug"
-end
+require "byebug"
 
 # coveralls for github badge
 require 'coveralls'
